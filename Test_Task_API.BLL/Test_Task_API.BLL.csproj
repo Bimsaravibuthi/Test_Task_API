@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Test_Task_API.BOL\Test_Task_API.BOL.csproj" />
+    <ProjectReference Include="..\Test_Task_API.DAL\Test_Task_API.DAL.csproj" />
+  </ItemGroup>
+
+</Project>
