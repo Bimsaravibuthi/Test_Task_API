@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Test_Task_API.BOL\Test_Task_API.BOL.csproj" />
     <ProjectReference Include="..\Test_Task_API.DAL\Test_Task_API.DAL.csproj" />
+    <ProjectReference Include="..\Test_Task_API.Shared\Test_Task_API.Shared.csproj" />
   </ItemGroup>
 
 </Project>

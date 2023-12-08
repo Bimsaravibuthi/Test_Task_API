@@ -8,6 +8,7 @@ using System.Text;
 using Test_Task_API.BLL;
 using Test_Task_API.Helpers;
 using Test_Task_API.Models.User;
+using Test_Task_API.Shared;
 
 namespace Test_Task_API.Controllers
 {
@@ -15,10 +16,10 @@ namespace Test_Task_API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserLogic _userLogic;
-        public UserController() 
+        private readonly IUserRepository _userLogic;
+        public UserController(IUserRepository userRepository) 
         {
-            _userLogic = new();
+            _userLogic = userRepository;
         }
         [HttpGet("UserView/{Id?}")]
         public IActionResult UserView(int? Id)

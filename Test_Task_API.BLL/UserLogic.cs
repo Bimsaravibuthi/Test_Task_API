@@ -3,10 +3,11 @@ using Test_Task_API.BOL;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.JsonPatch;
 using System.Net;
+using Test_Task_API.Shared;
 
 namespace Test_Task_API.BLL
 {
-    public class UserLogic
+    public class UserLogic : IUserRepository
     {
         private readonly DatabaseContext _dbContext;
         private readonly HttpStatus _httpStatus;
