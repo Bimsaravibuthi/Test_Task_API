@@ -7,11 +7,11 @@ namespace Test_Task_API.BLL
     {
         public Status StatusCodeWithContent(HttpStatusCode statusCode)
         {
-            return new Status { StatusCode = statusCode, ReasonPhrase = statusCode.ToString()};
+            return new Status { status = statusCode, ReasonPhrase = statusCode.ToString()};
         }
         public Status StatusCodeWithContent(HttpStatusCode statusCode, object? content)
         {
-            return new Status { StatusCode = statusCode, ReasonPhrase = statusCode.ToString(), Content = content};
+            return new Status { status = statusCode, ReasonPhrase = statusCode.ToString(), Content = content};
         }
     }
 }

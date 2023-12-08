@@ -4,8 +4,6 @@ namespace Test_Task_API.Models.User
 {
     public class Update
     {
-        [Required(ErrorMessage = "Id is required")]
-        public int ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [RegularExpression("^[a-zA-Z]+$", ErrorMessage = "Name should only contains letters")]
         [MaxLength(20)]
@@ -14,7 +12,7 @@ namespace Test_Task_API.Models.User
         [EmailAddress(ErrorMessage = "Enter a valid Email address")]
         [MaxLength(30)]
         public string? USR_EMAIL { get; set; }
-        [Required(ErrorMessage = "Password is required")]
+        [Required(ErrorMessage = "Password is required")]   
         public string? USR_PASSWORD { get; set; }
         [Required(ErrorMessage = "Username is required")]
         [RegularExpression("^[^\\s]+$", ErrorMessage = "Username should not contains spaces")]
@@ -26,5 +24,7 @@ namespace Test_Task_API.Models.User
         [Required(ErrorMessage = "Status is required")]
         [EnumDataType(typeof(RoleStatus), ErrorMessage = "User status should be 'User' or 'Admin'")]
         public RoleStatus USR_STATUS { get; set; }
+        [Required(ErrorMessage = "User created date is required")]
+        public DateTime USR_CREATED { get; set; }
     }
 }

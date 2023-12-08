@@ -1,6 +1,7 @@
 ﻿using Test_Task_API.DAL;
 using Test_Task_API.BOL;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.JsonPatch;
 using System.Net;
 
 namespace Test_Task_API.BLL
@@ -15,6 +16,37 @@ namespace Test_Task_API.BLL
             _httpStatus = new();
         }
 
+        public Status? UserView(int? Id)
+        {
+            try
+            {
+                if (Id is not null)
+                {
+                    Tbl_User? user = _dbContext?.Tbl_Users?.SingleOrDefault(u => u.ID == Id);
+                    if(user is not null)
+                    {
+                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, user);
+                    }
+                }
+                else
+                {
+                    List<Tbl_User>? users = _dbContext?.Tbl_Users?.ToList();
+                    if (users is not null)
+                    {
+                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, users);
+                    }
+                }          
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.NotFound, "User(s) not found");
+            }
+            catch (SqlException)
+            {
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.ServiceUnavailable);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
         public Status? UserLogin(string Username, string Password)
         {
             try
@@ -66,6 +98,7 @@ namespace Test_Task_API.BLL
                     USR_STATUS = UserRole,
                     USR_CREATED = DateTime.Now,
                 };
+
                 _dbContext?.Tbl_Users?.Add(user);
                 int? OPState = _dbContext?.SaveChanges();
                 if (OPState >= 1)
@@ -78,30 +111,73 @@ namespace Test_Task_API.BLL
             {
                 return _httpStatus.StatusCodeWithContent(HttpStatusCode.ServiceUnavailable);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return null;
             }
         }
     
         public Status? UserUpdate(int Id, string? Name, string? Email, string? Password, string? Username,
-            string? Telephone, bool activeStatus, string? UserRole)
-        {           
-            Tbl_User user = new()
+            string? Telephone, bool activeStatus, string? UserRole, DateTime Created)
+        {
+            try
             {
-                ID = Id,
-                USR_NAME = Name,
-                USR_EMAIL = Email,
-                USR_PASSWORD = Password,
-                USR_ACTIVESTATUS = activeStatus,
-                USR_USERNAME = Username,
-                USR_TPN = Telephone,
-                USR_STATUS = UserRole,
-            };
+                var user = _dbContext?.Tbl_Users?.SingleOrDefault(u => u.ID == Id);
+                if (user is not null)
+                {
+                    user.USR_NAME = Name;
+                    user.USR_EMAIL = Email;
+                    user.USR_PASSWORD = Password;
+                    user.USR_ACTIVESTATUS = activeStatus;
+                    user.USR_USERNAME = Username;
+                    user.USR_TPN = Telephone;
+                    user.USR_STATUS = UserRole;
+                    user.USR_CREATED = Created;
 
-            _dbContext?.Tbl_Users?.Update(user);
-            int? OPstate = _dbContext?.SaveChanges();
-            return null;
+                    int? OPState = _dbContext?.SaveChanges();
+                    if (OPState >= 1)
+                    {
+                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, "User updated successfully");
+                    }
+                    return _httpStatus.StatusCodeWithContent(HttpStatusCode.InternalServerError);
+                }
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.NotFound, "User not found");
+            }
+            catch (SqlException)
+            {
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.ServiceUnavailable);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+    
+        public Status? UserPatch(int Id, JsonPatchDocument update)
+        {
+            try
+            {
+                var user = _dbContext?.Tbl_Users?.SingleOrDefault(u => u.ID == Id);
+                if (user is not null)
+                {
+                    update.ApplyTo(user);
+                    var OPState = _dbContext?.SaveChanges();
+                    if(OPState >= 1)
+                    {
+                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, "User updated successfully");
+                    }
+                    return _httpStatus.StatusCodeWithContent(HttpStatusCode.InternalServerError);
+                }
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.NotFound, "User not found");
+            }
+            catch (SqlException)
+            {
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.ServiceUnavailable);
+            }
+            catch(Exception)
+            {
+                return null;
+            }
         }
     }
 }

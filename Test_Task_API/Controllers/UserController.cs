@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,6 +20,24 @@ namespace Test_Task_API.Controllers
         {
             _userLogic = new();
         }
+        [HttpGet("UserView/{Id?}")]
+        public IActionResult UserView(int? Id)
+        {
+            var result = _userLogic.UserView(Id);
+            if(result is not null)
+            {
+                if(result.status == HttpStatusCode.OK)
+                {
+                    return StatusCode((int)result.status, result.Content);
+                }
+                if(result.Content is null)
+                {
+                    return StatusCode((int)result.status, new { result.status, result.ReasonPhrase });
+                }
+                return StatusCode((int)result.status, result);
+            }
+            return BadRequest("😕 Bad Input.");
+        }
 
         [HttpGet("UserLogin/{Username}/{Password}")]
         public IActionResult UserLogin(string Username, string Password)
@@ -27,15 +45,15 @@ namespace Test_Task_API.Controllers
             var result = _userLogic.UserLogin(Username, Password);
             if(result is not null)
             {   
-                if (result.StatusCode == HttpStatusCode.OK)
+                if (result.status == HttpStatusCode.OK)
                 {
-                    return StatusCode((int)result.StatusCode, new {accessToken = JwtAuth((string[]?)result.Content)});
+                    return StatusCode((int)result.status, new {accessToken = JwtAuth((string[]?)result.Content)});
                 }
                 if(result.Content is null)
                 {
-                    return StatusCode((int)result.StatusCode, new { result.StatusCode, result.ReasonPhrase });
+                    return StatusCode((int)result.status, new { result.status, result.ReasonPhrase });
                 }
-                return StatusCode((int)result.StatusCode, result);
+                return StatusCode((int)result.status, result);
             }
             return BadRequest("😕 Bad Input.");
         }
@@ -74,16 +92,60 @@ namespace Test_Task_API.Controllers
                 register.USR_USERNAME, register.USR_TPN, register.USR_ACTIVESTATUS,
                 Enum.GetName(typeof(RoleStatus), register.USR_STATUS));
 
-            if(OPState != null)
+            if(OPState is not null)
             {
-                return StatusCode((int)OPState.StatusCode, OPState);
+                if(OPState.Content is null)
+                {
+                    return StatusCode((int)OPState.status, new {OPState.status, OPState.ReasonPhrase});
+                }
+                return StatusCode((int)OPState.status, OPState);
             }
             return BadRequest("😕 Bad Input.");
         }
 
-        [HttpPut("UserUpdate")]
-        public IActionResult UserUpdate([FromBody] Update update)
+        [HttpPut("UserUpdate/{Id}")]
+        public IActionResult UserUpdate([FromBody] Update update, [FromRoute] int Id)
         {
+            var OPState = _userLogic.UserUpdate(Id, update.USR_NAME, update.USR_EMAIL, update.USR_PASSWORD,
+                update.USR_USERNAME, update.USR_TPN, update.USR_ACTIVESTATUS,
+                Enum.GetName(typeof(RoleStatus), update.USR_STATUS), update.USR_CREATED);
+
+            if(OPState is not null)
+            {
+                if(OPState.Content is null)
+                {
+                    return StatusCode((int)OPState.status, new {OPState.status, OPState.ReasonPhrase});
+                }
+                return StatusCode((int)OPState.status, OPState);
+            }
+            return BadRequest("😕 Bad Input.");
+        }
+
+        //[
+        //  {
+        //    "op": "replace",
+        //    "path": "usR_NAME",
+        //    "value": "Hansika"
+        //  },
+        //  {
+        //    "op": "replace",
+        //    "path": "usR_USERNAME",
+        //    "value": "THARUSHIH"
+        //  }
+        //]
+
+        [HttpPatch("UserPatch/{Id}")]
+        public IActionResult UserPatch([FromBody] JsonPatchDocument update, [FromRoute] int Id)
+        {
+            var OPState = _userLogic.UserPatch(Id, update);
+            if(OPState is not null)
+            {
+                if(OPState.Content is null)
+                {
+                    return StatusCode((int)OPState.status, new {OPState.status, OPState.ReasonPhrase});
+                }
+                return StatusCode((int)OPState.status, OPState);
+            }
             return BadRequest("😕 Bad Input.");
         }
     }
