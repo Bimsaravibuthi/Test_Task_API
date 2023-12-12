@@ -10,7 +10,7 @@ namespace Test_Task_API.Shared
         public Status? UserRegister(string? Name, string? Email, string? Password, string? Username,
             string? Telephone, bool activeStatus, string? UserRole);
         public Status? UserUpdate(int Id, string? Name, string? Email, string? Password, string? Username,
-            string? Telephone, bool activeStatus, string? UserRole, DateTime Created);
+            string? Telephone, bool activeStatus, string? UserRole);
         public Status? UserPatch(int Id, JsonPatchDocument update);
     }
 }

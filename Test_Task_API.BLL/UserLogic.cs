@@ -119,21 +119,20 @@ namespace Test_Task_API.BLL
         }
     
         public Status? UserUpdate(int Id, string? Name, string? Email, string? Password, string? Username,
-            string? Telephone, bool activeStatus, string? UserRole, DateTime Created)
+            string? Telephone, bool activeStatus, string? UserRole)
         {
             try
             {
                 var user = _dbContext?.Tbl_Users?.SingleOrDefault(u => u.ID == Id);
                 if (user is not null)
                 {
-                    user.USR_NAME = Name;
-                    user.USR_EMAIL = Email;
-                    user.USR_PASSWORD = Password;
-                    user.USR_ACTIVESTATUS = activeStatus;
-                    user.USR_USERNAME = Username;
-                    user.USR_TPN = Telephone;
-                    user.USR_STATUS = UserRole;
-                    user.USR_CREATED = Created;
+                    user.USR_NAME = string.IsNullOrEmpty(Name) ? user.USR_NAME : Name;
+                    user.USR_EMAIL = string.IsNullOrEmpty(Email) ? user.USR_EMAIL : Email;
+                    user.USR_PASSWORD = string.IsNullOrEmpty(Password) ? user.USR_PASSWORD : Password;
+                    user.USR_ACTIVESTATUS = string.IsNullOrEmpty(activeStatus.ToString()) ? user.USR_ACTIVESTATUS : activeStatus;
+                    user.USR_USERNAME = string.IsNullOrEmpty(Username) ? user.USR_USERNAME : Username;
+                    user.USR_TPN = string.IsNullOrEmpty(Telephone) ? user.USR_TPN : Telephone;
+                    user.USR_STATUS = string.IsNullOrEmpty(UserRole) ? user.USR_STATUS : UserRole;
 
                     int? OPState = _dbContext?.SaveChanges();
                     if (OPState >= 1)

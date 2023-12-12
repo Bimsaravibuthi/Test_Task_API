@@ -23,6 +23,7 @@ builder.Services.AddAuthentication("JwtAuth")
     });
 
 builder.Services.AddScoped<IUserRepository, UserLogic>();
+builder.Services.AddScoped<ITaskRepository, TaskLogic>();
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

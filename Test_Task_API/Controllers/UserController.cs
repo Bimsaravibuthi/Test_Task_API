@@ -5,7 +5,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using Test_Task_API.BLL;
 using Test_Task_API.Helpers;
 using Test_Task_API.Models.User;
 using Test_Task_API.Shared;
@@ -87,11 +86,11 @@ namespace Test_Task_API.Controllers
         }
 
         [HttpPost("UserRegister")]
-        public IActionResult UserRegister([FromBody] Register register)
+        public IActionResult UserRegister([FromBody] RegisterUser registerUser)
         {
-            var OPState = _userLogic.UserRegister(register.USR_NAME, register.USR_EMAIL, register.USR_PASSWORD,
-                register.USR_USERNAME, register.USR_TPN, register.USR_ACTIVESTATUS,
-                Enum.GetName(typeof(RoleStatus), register.USR_STATUS));
+            var OPState = _userLogic.UserRegister(registerUser.USR_NAME, registerUser.USR_EMAIL, registerUser.USR_PASSWORD,
+                registerUser.USR_USERNAME, registerUser.USR_TPN, registerUser.USR_ACTIVESTATUS,
+                Enum.GetName(typeof(RoleStatus), registerUser.USR_STATUS));
 
             if(OPState is not null)
             {
@@ -105,11 +104,11 @@ namespace Test_Task_API.Controllers
         }
 
         [HttpPut("UserUpdate/{Id}")]
-        public IActionResult UserUpdate([FromBody] Update update, [FromRoute] int Id)
+        public IActionResult UserUpdate([FromBody] UpdateUser updateUser, [FromRoute] int Id)
         {
-            var OPState = _userLogic.UserUpdate(Id, update.USR_NAME, update.USR_EMAIL, update.USR_PASSWORD,
-                update.USR_USERNAME, update.USR_TPN, update.USR_ACTIVESTATUS,
-                Enum.GetName(typeof(RoleStatus), update.USR_STATUS), update.USR_CREATED);
+            var OPState = _userLogic.UserUpdate(Id, updateUser.USR_NAME, updateUser.USR_EMAIL, updateUser.USR_PASSWORD,
+                updateUser.USR_USERNAME, updateUser.USR_TPN, updateUser.USR_ACTIVESTATUS,
+                Enum.GetName(typeof(RoleStatus), updateUser.USR_STATUS));
 
             if(OPState is not null)
             {

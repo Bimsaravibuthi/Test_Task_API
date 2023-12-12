@@ -2,7 +2,7 @@
 
 namespace Test_Task_API.Models.User
 {
-    public class Register
+    public class RegisterUser
     {
         [Required(ErrorMessage ="Name is required")]
         [RegularExpression("^[a-zA-Z]+$", ErrorMessage ="Name should only contains letters")]
