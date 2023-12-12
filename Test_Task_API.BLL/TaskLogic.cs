@@ -9,44 +9,12 @@ namespace Test_Task_API.BLL
 {
     public class TaskLogic : ITaskRepository
     {
-        private readonly DatabaseContext _dbContext;
+        private readonly DatabaseContext? _dbContext;
         private readonly HttpStatus _httpStatus;
         public TaskLogic() 
         {
             _dbContext = new();
             _httpStatus = new();
-        }
-
-        public Status? TaskView(int? Id)
-        {
-            try
-            {
-                if (Id is not null)
-                {
-                    var result = _dbContext?.Tbl_Tasks?.FirstOrDefault(t => t.ID == Id);
-                    if (result is not null)
-                    {
-                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, result);
-                    }
-                }
-                else
-                {
-                    var result = _dbContext?.Tbl_Tasks?.ToList();
-                    if (result is not null)
-                    {
-                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, result);
-                    }
-                }
-                return _httpStatus.StatusCodeWithContent(HttpStatusCode.NotFound, "Task(s) not found");
-            }
-            catch (SqlException)
-            {
-                return _httpStatus.StatusCodeWithContent(HttpStatusCode.ServiceUnavailable);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
     
         public Status? TaskCreate(string? Name, string? Description, int Priority, DateTime? End, int CreatedUser)
@@ -142,6 +110,64 @@ namespace Test_Task_API.BLL
             { 
                 return null;
             }          
+        }
+
+        public Status? TaskView(int? Id)
+        {
+            try
+            {
+                if (Id is not null)
+                {
+                    var result = _dbContext?.Tbl_Tasks?.FirstOrDefault(t => t.ID == Id);
+                    if (result is not null)
+                    {
+                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, result);
+                    }
+                }
+                else
+                {
+                    var result = _dbContext?.Tbl_Tasks?.ToList();
+                    if (result is not null)
+                    {
+                        return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, result);
+                    }
+                }
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.NotFound, "Task(s) not found");
+            }
+            catch (SqlException)
+            {
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.ServiceUnavailable);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+    
+        public Status? TaskWithUserId()
+        {
+            try
+            {
+                var result = (from t in _dbContext.Tbl_Tasks
+                             join u in _dbContext.Tbl_Users
+                             on t.User.ID equals u.ID
+                             select new
+                             {
+                                 taskId = t.ID, 
+                                 taskName = t.TSK_NAME,
+                                 userName = u.USR_NAME
+                             }).ToList();
+
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, result);
+            }
+            catch (SqlException)
+            {
+                return _httpStatus.StatusCodeWithContent(HttpStatusCode.ServiceUnavailable);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

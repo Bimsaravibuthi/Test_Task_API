@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Test_Task_API.Models.Task;
 using Test_Task_API.Shared;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Test_Task_API.Controllers
 {
@@ -15,25 +14,6 @@ namespace Test_Task_API.Controllers
         public TaskController(ITaskRepository taskRepository)
         {
             _taskLogic = taskRepository;
-        }
-
-        [HttpGet("TaskView/{Id?}")]
-        public IActionResult TaskView(int? Id)
-        {
-            var result = _taskLogic.TaskView(Id);
-            if (result is not null)
-            {
-                if (result.status == HttpStatusCode.OK)
-                {
-                    return StatusCode((int)result.status, result.Content);
-                }
-                if (result.Content is not null)
-                {
-                    return StatusCode((int)result.status, result);
-                }
-                return StatusCode((int)result.status, new { result.status, result.ReasonPhrase });
-            }
-            return BadRequest("😕 Bad Input");
         }
 
         [HttpPost("TaskCreate")]
@@ -81,6 +61,44 @@ namespace Test_Task_API.Controllers
                     return StatusCode((int)OPStatus.status, OPStatus);
                 }
                 return StatusCode((int)OPStatus.status, new {OPStatus.status, OPStatus.ReasonPhrase });
+            }
+            return BadRequest("😕 Bad Input");
+        }
+
+        [HttpGet("TaskView/{Id?}")]
+        public IActionResult TaskView(int? Id)
+        {
+            var result = _taskLogic.TaskView(Id);
+            if (result is not null)
+            {
+                if (result.status == HttpStatusCode.OK)
+                {
+                    return StatusCode((int)result.status, result.Content);
+                }
+                if (result.Content is not null)
+                {
+                    return StatusCode((int)result.status, result);
+                }
+                return StatusCode((int)result.status, new { result.status, result.ReasonPhrase });
+            }
+            return BadRequest("😕 Bad Input");
+        }
+
+        [HttpGet("TaskWithUserId")]
+        public IActionResult TaskWithUserId()
+        {
+            var result = _taskLogic.TaskWithUserId();
+            if(result is not null)
+            {
+                if(result.status == HttpStatusCode.OK)
+                {
+                    return StatusCode((int)result.status, result.Content);
+                }
+                if(result.Content is not null)
+                {
+                    return StatusCode((int)result.status, result);
+                }
+                return StatusCode((int)result.status, new { result.status, result.ReasonPhrase });
             }
             return BadRequest("😕 Bad Input");
         }
