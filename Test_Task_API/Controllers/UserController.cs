@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,7 +21,8 @@ namespace Test_Task_API.Controllers
         {
             _userLogic = userRepository;
         }
-        [HttpGet("UserView/{Id?}")]
+        [Authorize]
+        [HttpGet("UserView/{Id?}")]        
         public IActionResult UserView(int? Id)
         {
             var result = _userLogic.UserView(Id);
@@ -59,12 +61,12 @@ namespace Test_Task_API.Controllers
         }
         private static string JwtAuth(string[]? user)
         {
-            var claims = new List<Claim>
+            var claims = new[]
             {
-                new("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Username", user[0]),
-                new(ClaimTypes.Name, user[1]),              
-                new(ClaimTypes.Email,user[2]),
-                new(ClaimTypes.Role, user[3])
+                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/Username", user[0]),
+                new Claim(ClaimTypes.Name, user[1]),              
+                new Claim(ClaimTypes.Email, user[2]),
+                new Claim(ClaimTypes.Role, user[3]),
             };
 
             var keyBytes = Encoding.UTF8.GetBytes(Constants.SecretKey);
@@ -73,12 +75,12 @@ namespace Test_Task_API.Controllers
 
             var signinCridentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
-                    Constants.Issuer,
+            var token = new JwtSecurityToken(                   
                     Constants.Audiance,
+                    Constants.Issuer,
                     claims,
                     notBefore: DateTime.Now,
-                    expires: DateTime.Now.AddHours(5),
+                    expires: DateTime.Now.AddHours(1),
                     signinCridentials
                 );
 

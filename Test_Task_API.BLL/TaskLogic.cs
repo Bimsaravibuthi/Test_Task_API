@@ -148,14 +148,16 @@ namespace Test_Task_API.BLL
         {
             try
             {
-                var result = (from t in _dbContext.Tbl_Tasks
-                             join u in _dbContext.Tbl_Users
-                             on t.User.ID equals u.ID
+                var result = (from u in _dbContext.Tbl_Users
+                             join t in _dbContext.Tbl_Tasks
+                             on u.ID equals t.User.ID
+                             into UserTasks
+                             from ut in UserTasks.DefaultIfEmpty()
                              select new
                              {
-                                 taskId = t.ID, 
-                                 taskName = t.TSK_NAME,
-                                 userName = u.USR_NAME
+                                 userId = u.ID,
+                                 userName = u.USR_NAME,
+                                 taskName = ut.TSK_NAME
                              }).ToList();
 
                 return _httpStatus.StatusCodeWithContent(HttpStatusCode.OK, result);

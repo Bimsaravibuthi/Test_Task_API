@@ -81,8 +81,7 @@ namespace Test_Task_API.BLL
             {
                 return null;
             }
-        }
-    
+        } 
         public Status? UserRegister(string? Name, string? Email, string? Password, string? Username,
             string? Telephone, bool activeStatus, string? UserRole)
         {
